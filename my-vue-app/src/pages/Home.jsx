@@ -5,7 +5,7 @@ import CartUserSidebar from "../conponment/cartuser";
 import Footer from "../conponment/footer";
 import Navbar from "../conponment/navbare";
 import axios from "axios";
-import "../styles/global.css";
+import "../styles/Global.css";
 
 function HomePage() {
   const [products, setProducts] = useState([]);

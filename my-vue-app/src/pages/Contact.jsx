@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import "../styles/contact.css";
-import Navbar from "../conponment/navbare";
+import "../styles/Contact.css";
 
 const Contact = () => {
      const [darkMode, setDarkMode] = useState(() => {
