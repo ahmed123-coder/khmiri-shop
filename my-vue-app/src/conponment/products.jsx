@@ -1,12 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import "../styles/custom.css";
+import "../styles/products.css"; // Assuming you have a CSS file for styling
 
-function Products({onAddToCart, products}) {
-  const [darkMode, setDarkMode] = useState(() => {
-    return localStorage.getItem("darkMode") === "enabled";
-  });
+function Products({onAddToCart, products , darkMode}) {
   const navigate = useNavigate();  
 
   const handleBuyNow = (productId) => {
@@ -22,12 +19,12 @@ function Products({onAddToCart, products}) {
           {products.filter(product => product.isActive).map((product) => (
             <div key={product._id} className="col-lg-3 col-md-6 col-sm-6 col-md-6 col-sm-6 mb-4">
               <div className="card h-100 text-center">
-                <img
-                  src={`http://localhost:4000/${product.image}`} 
+             {product.image && product.image.startsWith("https://") && (
+            <img src={product.image}
                   alt={product.name}
                   className="card-img-top"
-                  style={{ maxHeight: "200px", objectFit: "cover" }}
-                />
+                  style={{ maxHeight: "200px", objectFit: "cover" }}/>
+           )}
                 <div className="card-body">
                   <h5 className="card-title">{product.name}</h5>
                   <p className="card-text">{product.description}</p>

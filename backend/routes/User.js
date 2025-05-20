@@ -1,8 +1,9 @@
 const express = require("express");
+const dotenv = require("dotenv");
 const router = express.Router();
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
-const JWT_SECRET = "your_secret_key";
+const JWT_SECRET = process.env.JWT_SECRET;
 const bcrypt = require("bcrypt");
 const ProductGroup = require("../models/ProductGroup"); // تأكد أن المسار صحيح
 const Product = require("../models/Product"); // تأكد أن المسار صحيح

@@ -1,23 +1,26 @@
 const express = require("express");
+const dotenv = require("dotenv");
 const multer = require("multer");
 const router = express.Router();
 const ProductGroup = require("../models/ProductGroup");
 const Product = require("../models/Product");
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
-const JWT_SECRET = "your_secret_key";
+const JWT_SECRET = process.env.JWT_SECRET;
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
+const cloudinary = require("../cloudinaryConfig");
 
-// Multer configuration for file uploads
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-      cb(null, "uploads/"); // Save files in the "uploads" folder
-    },
-    filename: function (req, file, cb) {
-      cb(null, Date.now() + "-" + file.originalname); // Rename file to avoid conflicts
-    },
-  });
-  
-const upload = multer({ storage: storage });
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: "uploads",
+    upload_preset:process.env.CLOUDINARY_UPLOAD_PRESET,
+    allowed_formats: ["jpg", "png", "jpeg", "webp"],
+    transformation: [{ width: 800, crop: "limit" }],
+  },
+});
+
+const upload = multer({ storage });
 router.get("/", async (req, res)=>{
     try{
         const productGroups = await ProductGroup.find().populate("products.product", "name price quantity");

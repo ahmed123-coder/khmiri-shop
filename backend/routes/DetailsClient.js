@@ -1,10 +1,11 @@
 const express = require("express");
+const dotenv = require("dotenv");
 const router = express.Router();
 const DetailsClient = require("../models/DetailsClient");
 const Order = require("../models/Order");
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
-const JWT_SECRET = "your_secret_key";
+const JWT_SECRET = process.env.JWT_SECRET;
 
 // Create DetailsClient entry
 // routes/DetailsClient.js
@@ -54,4 +55,32 @@ router.get("/", async (req, res)=>{
     res.status(500).json({ message: "Internal server error" });
   }
 });
+router.delete("/:id" , async (req, res)=>{
+  try{
+        const token = req.headers.authorization?.split(" ")[1];
+    
+        if (!token) {
+          return res.status(401).json({ message: "No token provided" });
+        }
+        const decode = jwt.verify(token, JWT_SECRET);
+        const user = await User.findById(decode.id);
+        if(!user){
+          return res.status(401).json({ message: "No token provided" });
+        }
+        if(user.role === "admin"){
+          const {id} = req.params;
+          const detailclient = await DetailsClient.findById({idorder: id});
+          if(!detailclient){
+            return res.status(404).json({ message: "Order details not found." });
+          }else{
+              await detailclient.findByIdAndDelete(req.params.id);
+              res.status(200).json({ message: "Order deleted successfully" });
+          }
+        }
+  }catch(err){
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+
 module.exports = router;

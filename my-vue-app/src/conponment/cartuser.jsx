@@ -2,11 +2,11 @@ import React from "react";
 import { useNavigate } from "react-router-dom"; // ✅ التصحيح هنا
 import "../styles/CartSidebar.css";
 
-function CartUserSidebar({ cartProducts = [], cartGroups = [], onQuantityChange, onRemove, onClose, isOpen }) {
+function CartUserSidebar({ cartProducts = [], cartGroups = [], onQuantityChange, onRemove, onClose, isOpen, darkMode }) {
   const navigate = useNavigate();  
 
   return (
-    <div className={`cart-sidebar ${isOpen ? "open" : ""}`}>
+    <div className={`cart-sidebar ${darkMode ? "dark-mode" : ""}  ${isOpen ? "open" : ""}`}>
       <button className="close-btn" onClick={onClose}>×</button>
       <h2>🛒 سلة المشتريات</h2>
 
@@ -18,7 +18,7 @@ function CartUserSidebar({ cartProducts = [], cartGroups = [], onQuantityChange,
             <div key={index} className="cart-item">
               <div className="item-details">
                 <h3>name: {item.name}</h3>
-                <img src={`http://localhost:4000/${item.image}`} alt={item.name} className="cart-item-image" />
+                <img src={item.image} alt={item.name} className="cart-item-image" />
                 <p>السعر: {item.price} دولار</p>
                 <div className="quantity-controls">
                   <button
@@ -45,7 +45,7 @@ function CartUserSidebar({ cartProducts = [], cartGroups = [], onQuantityChange,
             <div key={index} className="cart-item">
               <div className="item-details">
                 <h3>name: {item.name}</h3>
-                <img src={`http://localhost:4000/${item.image}`} alt={item.name} className="cart-item-image" />
+                <img src={item.image} alt={item.name} className="cart-item-image" />
                 <p>السعر: {item.price} دولار</p>
                 <div className="quantity-controls">
                   <button

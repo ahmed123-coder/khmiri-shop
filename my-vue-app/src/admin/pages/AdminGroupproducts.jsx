@@ -23,13 +23,15 @@ const AdminOrder = () => {
   }, []);
 
   const fetchProductGroups = async () => {
-    try {
-      const response = await axios.get("http://localhost:4000/api/groupproducts");
-      setProductGroups(response.data);
-    } catch (error) {
-      console.error("Error fetching product groups:", error);
-    }
-  };
+  try {
+    const response = await axios.get("http://localhost:4000/api/groupproducts");
+    setProductGroups(response.data);
+  } catch (error) {
+    console.error("Error fetching product groups:", error.response?.data || error.message);
+    // أضف تنبيه للمستخدم
+    alert("فشل تحميل المجموعات: " + (error.response?.data?.error || error.message));
+  }
+};
 
   const fetchProducts = async () => {
     try {
@@ -113,7 +115,10 @@ const AdminOrder = () => {
       console.error("Error deleting product group:", error);
     }
   };
-
+  // قبل العرض:
+if (!productGroups || !products) {
+  return <div>Loading...</div>;
+}
   return (
     <div className="admin-order">
       <Admin />
@@ -197,12 +202,12 @@ const AdminOrder = () => {
       </form>
 
       <h2>Product Groups</h2>
-      <div className="product-groups">
+      <div className="product-groups row">
         {productGroups.map((group) => (
           <div key={group._id} className="group-item">
                         {group.image && (
               <img
-                src={`http://localhost:4000/${group.image}`}
+                src={group.image}
                 alt={group.name}
                 className="group-image"
               />
@@ -213,10 +218,9 @@ const AdminOrder = () => {
             <p>Products:</p>
             <ul>
               {group.products.map((item, index) => (
-                
                 <li key={index}>
-                  {item.product.name} (Quantity: {item.quantity})
-                </li>
+  {item.product?.name || "Product deleted"} (Quantity: {item.quantity})
+</li>
               ))}
             </ul>
             <div className="group-actions">

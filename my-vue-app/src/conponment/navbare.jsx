@@ -1,99 +1,97 @@
 import React, { useState, useEffect } from "react";
-import "../styles/navbar.css"; // Import your CSS file for styling
-const Navbar = ({ isCartOpen, setIsCartOpen, darkMode, setDarkMode }) => {
-  // State to toggle the navbar
+import "../styles/navbar.css";
+
+const Navbar = ({
+  isCartOpen,
+  setIsCartOpen,
+  darkMode,
+  setDarkMode,
+  setcartorderdetails,
+  iscartorderdetails,
+  token,
+  onSearchChange
+}) => {
   const [isOpen, setIsOpen] = useState(false);
-  // when click on the hamburger icon, toggle the navbar
+  const [searchTerm, setSearchTerm] = useState("");
+
   const toggleNavbar = () => setIsOpen(!isOpen);
-  // when click on the cart icon, toggle the cart sidebar
   const toggleCart = () => setIsCartOpen(!isCartOpen);
+  const toggleOrderDetails = () => setcartorderdetails(!iscartorderdetails);
 
   useEffect(() => {
-    const cartSidebar = document.querySelector(".cart-sidebar");
-  
-    if (darkMode) {
-      document.body.classList.add("dark-mode");
-      if (cartSidebar) {
-        cartSidebar.classList.add("dark-mode");
-      }
-      localStorage.setItem("darkMode", "enabled");
-    } else {
-      document.body.classList.remove("dark-mode");
-      if (cartSidebar) {
-        cartSidebar.classList.remove("dark-mode");
-      }
-      localStorage.setItem("darkMode", "disabled");
-    }
+    document.body.classList.toggle("dark-mode", darkMode);
+    localStorage.setItem("darkMode", darkMode ? "enabled" : "disabled");
   }, [darkMode]);
-  
+
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+    onSearchChange(e.target.value); // ترسل القيمة للـ HomePage
+  };
 
   return (
-    <div>
-    <div className="header__top">
-            <div className="container">
-                <div className="row">
-                    <div className="col-lg-6 col-md-7">
-                        <div className="header__top__left">
-                            <p>Free shipping, 30-day return or refund guarantee.</p>
-                        </div>
-                    </div>
-                    <div className="col-lg-6 col-md-5">
-                        <div className="header__top__right">
-                            <div className="header__top__links">
-                                <a href="/login">Login</a>
-                                <a href="#">FAQs</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <header className="navbar-container">
+      <div className="navbar">
+        {/* Logo */}
+        <div className="navbar-logo">
+          <a href="/">
+            <i className="bi bi-shop-window"></i>
+          </a>
         </div>
-    <nav className="navbar">
-      {/* Logo */}
-      <div className="navbar-logo navbar-brand">
-        <a href="/">My Shop</a>
-      </div>
-      {/* Navbar Links */}
-      <div id="navbarNav" className={`navbar-links ${isOpen ? "active" : ""}`}>
-        <ul>
-          <li><a href="/" onClick={toggleNavbar}>Home</a></li>
-          <li><a href="/about" onClick={toggleNavbar}>About</a></li>
-          <li><a href="/services" onClick={toggleNavbar}>Services</a></li>
-          <li><a href="/contact" onClick={toggleNavbar}>Contact</a></li>
-          <li><a href="/login" onClick={toggleNavbar}>Login</a></li>
-          <li><a href="/logout" onClick={toggleNavbar}>Logout</a></li>
-          <li><a href="/details-order" onClick={toggleNavbar}>order</a></li>
-        </ul>
-      </div>
 
-      {/* Icons Section (Cart, Dark Mode, Hamburger) */}
-      <div>
+        {/* Search bar */}
+        <div className="search-box">
+          <input
+            type="text"
+            placeholder="Search products..."
+            value={searchTerm}
+            onChange={handleSearchChange}
+          />
+          <i className="bi bi-search"></i>
+        </div>
+
+        {/* Links */}
+        <nav className={`navbar-links ${isOpen ? "active" : ""}`}>
+          <a href="/"><i className="bi bi-house-door"></i> Home</a>
+          <a href="/about"><i className="bi bi-info-circle"></i> About</a>
+          <a href="/services"><i className="bi bi-gear"></i> Services</a>
+          <a href="/contact"><i className="bi bi-envelope"></i> Contact</a>
+          {token ? (
+            <>
+              <a href="/logout"><i className="bi bi-box-arrow-right"></i> Logout</a>
+              <a onClick={toggleOrderDetails}><i className="bi bi-receipt-cutoff"></i> Orders</a>
+            </>
+          ) : (
+            <a href="/login"><i className="bi bi-person"></i> Login</a>
+          )}
+        </nav>
+
+        {/* Icons */}
         <div className="navbar-icons">
-          {/* Cart Icon */}
-          <button className="cart-icon" onClick={toggleCart}>
-            <i className="bi bi-bag"></i>
+          {token && (
+            <button onClick={toggleOrderDetails} className="icon-btn">
+              <i className="bi bi-bag-check"></i>
+            </button>
+          )}
+          <button onClick={toggleCart} className="icon-btn">
+            <i className="bi bi-cart"></i>
           </button>
-          {/* Dark Mode Toggle */}
           <button
-            className="toggle-dark-mode"
             onClick={() => setDarkMode(!darkMode)}
-            aria-label="Toggle Dark Mode"
+            className="icon-btn"
+            aria-label="Toggle dark mode"
           >
             {darkMode ? (
-              <div><i className="bi bi-sun-fill"></i> </div>// Sun icon for light mode
+              <i className="bi bi-sun-fill"></i>
             ) : (
-              <div><i className="bi bi-moon"></i> </div>// Moon icon for dark mode
+              <i className="bi bi-moon-stars-fill"></i>
             )}
           </button>
-
-          {/* Hamburger Menu (Mobile) */}
-          <div className="navbar-toggle" onClick={toggleNavbar}>
+          <button className="navbar-toggle icon-btn" onClick={toggleNavbar}>
             <i className="bi bi-list"></i>
-          </div>
+          </button>
         </div>
       </div>
-    </nav>
-    </div>
+    </header>
   );
 };
 

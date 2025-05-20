@@ -1,9 +1,11 @@
-import React from "react";
+
+import React, { useState } from "react";
 import "../styles/footer.css";
 
-const Footer = () => {
+const Footer = ({darkMode}) => {
+
   return (
-    <footer className="footer">
+    <footer className={`footer ${darkMode ? "dark-mode" : ""}`}>
       <div className="footer-container">
         {/* Quick Links Section */}
         <div className="footer-section">

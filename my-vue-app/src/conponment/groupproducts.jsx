@@ -1,12 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import "../styles/custom.css";
 
-function Groups({onAddToCart, groups}) {
-    const [darkMode, setDarkMode] = useState(() => {
-      return localStorage.getItem("darkMode") === "enabled";
-    });
+function Groups({onAddToCart, groups, darkMode}) {
   const navigate = useNavigate();
 
   const handleBuyNow = (groupId) => {
@@ -22,12 +18,13 @@ function Groups({onAddToCart, groups}) {
           {groups.filter(group => group.available).map((group) => (
             <div key={group._id} className="col-lg-3 col-md-6 col-sm-6 col-md-6 col-sm-6 mb-4">
               <div className="card h-100 text-center">
-                <img
-                  src={`http://localhost:4000/${group.image}`} 
+          {group.image && group.image.startsWith("https://") && (
+            <img src={group.image}
                   alt={group.name}
                   className="card-img-top"
                   style={{ maxHeight: "200px", objectFit: "cover" }}
-                />
+            />
+          )}
                 <div className="card-body">
                   <h5 className="card-title">{group.name}</h5>
                   <p className="card-text">{group.description}</p>

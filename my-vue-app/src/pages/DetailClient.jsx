@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
+import "../styles/detailClient.css";
 
 function DetailClient() {
+      const [darkMode, setDarkMode] = useState(() => {
+        return localStorage.getItem("darkMode") === "enabled";
+      });
   const [formdata, setFormdata] = useState({
     idorder: "",
     firstname: "",
@@ -109,7 +113,7 @@ function DetailClient() {
   if (!isUserLoaded) return <p>جاري التحميل...</p>;
 
   return (
-    <div>
+    <div className={`detail-client ${darkMode ? "dark-mode" : ""}`}>
       <form onSubmit={handlePostCart}>
         <div><label>First Name:</label>
           <input type="text" name="firstname" value={formdata.firstname} onChange={handleInputChange} required />

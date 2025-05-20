@@ -107,9 +107,7 @@ const OrdersAdminPage = () => {
   };
   const updateStatuscanceled = async (id) => {
     try {
-      await axios.put(`http://localhost:4000/api/orders/${id}/canceled`, {}, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.put(`http://localhost:4000/api/orders/${id}/canceled`);
       fetchOrders();
     } catch (error) {
       alert("Error updating status");
@@ -130,6 +128,9 @@ const OrdersAdminPage = () => {
     if (!window.confirm("Are you sure you want to delete this order?")) return;
     try {
       await axios.delete(`http://localhost:4000/api/orders/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      await axios.delete(`http://localhost:4000/api/details/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       fetchOrders();
@@ -364,6 +365,9 @@ const OrdersAdminPage = () => {
           {user.firstName} {user.lastName}
         </option>
       ))}
+      <option value="Guest">
+        Guest
+      </option>
     </select>
   </div>
 
@@ -480,7 +484,7 @@ const OrdersAdminPage = () => {
                   <br />
                   Price: {product.product.price} - Total: {product.product.price * product.quantity}
                   <br />
-                  <img src={`http://localhost:4000/${product.product.image}`} alt={product.product.name} className="w-20 h-20" />
+                  <img src={product.product.image} alt={product.product.name} className="w-20 h-20" />
                 </li>
               ))}
                             
@@ -493,7 +497,7 @@ const OrdersAdminPage = () => {
                   <br />
                   Price: {group.group.price} - Total: {group.group.price * group.quantity}
                   <br />
-                  <img src={`http://localhost:4000/${group.group.image}`} alt={group.group.name} className="w-20 h-20" />
+                  <img src={group.group.image} alt={group.group.name} className="w-20 h-20" />
                 </li>
               ))}
             </ul>

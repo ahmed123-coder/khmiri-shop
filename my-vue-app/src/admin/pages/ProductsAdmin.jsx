@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "../style/Product.css";
@@ -6,7 +5,7 @@ import Admin from "./admin";
 
 const ProductsAdmin = () => {
   const [products, setProducts] = useState([]);
-  const [categorys, setCategorys] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [token, setToken] = useState(localStorage.getItem("token") || "");
   const [editProduct, setEditProduct] = useState(null);
   const [formData, setFormData] = useState({
@@ -18,25 +17,13 @@ const ProductsAdmin = () => {
     image: null,
   });
 
-  // Fetch all products on component mount
+  // Fetch all products and categories on component mount
   useEffect(() => {
     fetchProducts();
-    fetchCategory();
+    fetchCategories();
   }, []);
 
-  const handleedit = (product) => {
-    setEditProduct(product._id);
-    setFormData({
-      name: product.name,
-      description: product.description,
-      price: product.price,
-      category: product.category,
-      quantity: product.quantity,
-      image: product.image,
-    });
-  };
-
-  const deleteproduct = async (id) => {
+  const deleteProduct = async (id) => {
     try {
       await axios.delete(`http://localhost:4000/api/products/${id}`, {
         headers: {
@@ -46,6 +33,7 @@ const ProductsAdmin = () => {
       fetchProducts(); // Refresh the product list
     } catch (error) {
       console.error("Error deleting product:", error);
+      alert("Failed to delete product: " + (error.response?.data?.error || error.message));
     }
   };
 
@@ -59,14 +47,14 @@ const ProductsAdmin = () => {
     }
   };
 
-  const fetchCategory = async () => {
+  const fetchCategories = async () => {
     try {
       const response = await axios.get("http://localhost:4000/api/categorys", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      setCategorys(response.data);
+      setCategories(response.data);
     } catch (error) {
       console.error("Error fetching categories:", error);
     }
@@ -83,22 +71,35 @@ const ProductsAdmin = () => {
     setFormData({ ...formData, image: e.target.files[0] });
   };
 
-  // Handle form submission
+  const handleEdit = (product) => {
+    setEditProduct(product._id);
+    setFormData({
+      name: product.name,
+      description: product.description,
+      price: product.price.toString(),
+      category: product.category._id,
+      quantity: product.quantity.toString(),
+      image: null,
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const data = new FormData();
+
     data.append("name", formData.name);
     data.append("description", formData.description);
     data.append("price", formData.price);
     data.append("category", formData.category);
     data.append("quantity", formData.quantity);
-    data.append("image", formData.image);
+
+    if (formData.image) {
+      data.append("image", formData.image);
+    }
 
     try {
       if (editProduct) {
-        // Update existing product
-        const response = await axios.put(
+        await axios.put(
           `http://localhost:4000/api/products/${editProduct}`,
           data,
           {
@@ -108,10 +109,8 @@ const ProductsAdmin = () => {
             },
           }
         );
-        console.log("Product updated:", response.data);
       } else {
-        // Add new product
-        const response = await axios.post(
+        await axios.post(
           "http://localhost:4000/api/products",
           data,
           {
@@ -121,10 +120,8 @@ const ProductsAdmin = () => {
             },
           }
         );
-        console.log("Product added:", response.data);
       }
 
-      // Reset form and fetch updated product list
       setFormData({
         name: "",
         description: "",
@@ -136,14 +133,27 @@ const ProductsAdmin = () => {
       setEditProduct(null);
       fetchProducts();
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Error submitting product:", error);
+      let errorMessage = "An unexpected error occurred";
+      
+      if (error.response) {
+        if (typeof error.response.data === "string") {
+          errorMessage = "Server error: Please check your data";
+        } else {
+          errorMessage = error.response.data?.error || JSON.stringify(error.response.data);
+        }
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      alert("Error: " + errorMessage);
     }
   };
 
   return (
     <div className="products-admin">
       <Admin />
-      <h1>Add a New Product</h1>
+      <h1>{editProduct ? "Edit Product" : "Add a New Product"}</h1>
       <form onSubmit={handleSubmit} className="product-form">
         <div className="form-group">
           <label>Name:</label>
@@ -173,6 +183,8 @@ const ProductsAdmin = () => {
             value={formData.price}
             onChange={handleInputChange}
             required
+            min="0"
+            step="0.01"
           />
         </div>
         <div className="form-group">
@@ -184,7 +196,7 @@ const ProductsAdmin = () => {
             required
           >
             <option value="">Select a category</option>
-            {categorys.map((category) => (
+            {categories.map((category) => (
               <option key={category._id} value={category._id}>
                 {category.name}
               </option>
@@ -199,45 +211,74 @@ const ProductsAdmin = () => {
             value={formData.quantity}
             onChange={handleInputChange}
             required
+            min="0"
           />
         </div>
         <div className="form-group">
           <label>Image:</label>
-          <input type="file" name="image" onChange={handleFileChange} required />
+          <input 
+            type="file" 
+            name="image" 
+            onChange={handleFileChange}
+            accept="image/*"
+          />
         </div>
         <button type="submit" className="submit-btn">
           {editProduct ? "Update Product" : "Add Product"}
         </button>
+        {editProduct && (
+          <button 
+            type="button" 
+            className="cancel-btn"
+            onClick={() => {
+              setEditProduct(null);
+              setFormData({
+                name: "",
+                description: "",
+                price: "",
+                category: "",
+                quantity: "",
+                image: null,
+              });
+            }}
+          >
+            Cancel
+          </button>
+        )}
       </form>
 
       <h2>Product List</h2>
       <div className="row">
-          {products.filter(product => product.isActive).map((product) => (
-            <div key={product._id} className="col-lg-3 col-md-6 col-sm-6 col-md-6 col-sm-6 mb-4">
-              <div className="card h-100 text-center">
-                <img
-                  src={`http://localhost:4000/${product.image}`} 
-                  alt={product.name}
-                  className="card-img-top"
-                  style={{ maxHeight: "200px", objectFit: "cover" }}
-                />
-                <div className="card-body">
-                <h3>{product.name}</h3>
-            <p>Description:{product.description}</p>
-            <p>Price: ${product.price}</p>
-            <p>Quantity: {product.quantity}</p>
-                  <p className="card-text"><strong>السعر:</strong> {product.price} دولار</p>
-                  <button className="edit-btn" onClick={() => handleedit(product)}>
-                Edit
-              </button>
-              <button className="delete-btn" onClick={() => deleteproduct(product._id)}>
-                Delete
-              </button>
-                </div>
+        {products.filter(product => product.isActive).map((product) => (
+          <div key={product._id} className="col-lg-3 col-md-6 col-sm-6 col-md-6 col-sm-6 mb-4">
+            <img
+              src={product.image}
+              alt={product.name}
+              className="product-image"
+            />
+            <div className="product-details">
+              <h3>{product.name}</h3>
+              <p>{product.description}</p>
+              <p>Price: ${product.price}</p>
+              <p>Quantity: {product.quantity}</p>
+              <div className="product-actions">
+                <button 
+                  className="edit-btn" 
+                  onClick={() => handleEdit(product)}
+                >
+                  Edit
+                </button>
+                <button 
+                  className="delete-btn" 
+                  onClick={() => deleteProduct(product._id)}
+                >
+                  Delete
+                </button>
               </div>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
+    </div>
     </div>
   );
 };

@@ -14,7 +14,8 @@ const productSchema = new mongoose.Schema({
         min: 0,
     },
     image: {
-        type: String, // رابط لصورة المنتج
+        type: String,
+        required: true, // رابط لصورة المنتج
     },
     isActive: {
         type: Boolean,

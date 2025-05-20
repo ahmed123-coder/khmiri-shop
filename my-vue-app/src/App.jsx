@@ -10,7 +10,6 @@ import ProductsAdmin from "./admin/pages/ProductsAdmin";
 import AdminOrder from "./admin/pages/AdminGroupproducts";
 import Register from "./pages/register";
 import OrdersAdminPage from "./admin/pages/ordere";
-import DetailsOrder from "./pages/detailsorder";
 import Contact from "./pages/Contact";
 import Services from "./pages/Services";
 import About from "./pages/About";
@@ -19,6 +18,9 @@ import Logout from "./pages/logout";
 
 function App() {
   const [count, setCount] = useState(0);
+    const [darkMode, setDarkMode] = useState(() => {
+      return localStorage.getItem("darkMode") === "enabled";
+    });
 
   return (
     <>
@@ -31,8 +33,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/logout" element={<Logout />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/details-order" element={<DetailsOrder />} />
-        <Route path="/admin" element={<Admin />} />
+        <Route path="/admin" element={<Admin darkMode={darkMode}/>} />
         {/* Nested Admin Routes */}
         <Route path="/admin/users" element={<User />} />
         <Route path="/admin/categories" element={<Category />} />

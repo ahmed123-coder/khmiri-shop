@@ -1,8 +1,9 @@
 const express = require("express");
+const dotenv = require("dotenv");
 const router = express.Router();
 const Category = require("../models/Category");
 const User = require("../models/User");
-const JWT_SECRET = "your_secret_key";
+const JWT_SECRET = process.env.JWT_SECRET;
 const jwt = require("jsonwebtoken");
 
 router.post("/", async (req, res)=>{

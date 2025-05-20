@@ -1,6 +1,4 @@
-
-
-
+require("dotenv").config(); // ✅ لقراءة ملف .env
 const cors = require("cors");
 const path = require("path");
 const express = require("express");
@@ -29,4 +27,7 @@ app.use("/api/details", routerdetails);
 // ahmedkhemirii@gmail.com  ahmed 2003 admin
 app.listen(4000, ()=>{
     console.log("server running on 4000");
+});
+app.get("/", (req, res) => {
+  res.send("Server is running...");
 });

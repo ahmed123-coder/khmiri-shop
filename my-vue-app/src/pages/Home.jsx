@@ -4,18 +4,23 @@ import Groups from "../conponment/groupproducts";
 import CartUserSidebar from "../conponment/cartuser";
 import Footer from "../conponment/footer";
 import Navbar from "../conponment/navbare";
+import DetailsOrder from "../conponment/detailsorder";
 import axios from "axios";
-import "../styles/Global.css";
 
 function HomePage() {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [token , setToken] = useState(localStorage.getItem("token") || "");
   const [products, setProducts] = useState([]);
   const [groups, setGroups] = useState([]);
   const [cartProducts, setCartProducts] = useState([]);
   const [cartGroups, setCartGroups] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [cartorderdetails, setCartOrderDetails] = useState(false);
   const [darkMode, setDarkMode] = useState(() => {
     return localStorage.getItem("darkMode") === "enabled";
   });
+  const filteredProducts = products.filter(p => p.name.toLowerCase().includes(searchTerm));
+  const filteredGroups = groups.filter(g => g.name.toLowerCase().includes(searchTerm));
 
   useEffect(() => {
     axios.get("http://localhost:4000/api/products").then((res) => {
@@ -33,7 +38,9 @@ function HomePage() {
     setCartProducts(storedCart.products || []);
     setCartGroups(storedCart.groupproducts || []);
   }, []);
-
+  const handleSearch = (term) => {
+  setSearchTerm(term.toLowerCase());
+};
   const updateLocalStorage = (products, groups) => {
     localStorage.setItem(
       "guestCart",
@@ -100,11 +107,18 @@ function HomePage() {
 
   return (
     <div className="homepage">
+      <div>
+        {console.log("Token:", token)}
+      </div>
             <Navbar 
+        token={token}
         isCartOpen={isCartOpen}
         setIsCartOpen={setIsCartOpen}
         darkMode={darkMode}
         setDarkMode={setDarkMode}
+        setcartorderdetails={setCartOrderDetails}
+        iscartorderdetails={cartorderdetails}
+        onSearchChange={handleSearch}
       />
       <CartUserSidebar
         cartProducts={cartProducts}
@@ -113,10 +127,19 @@ function HomePage() {
         onRemove={handleRemoveItem}
         isOpen={isCartOpen}
         onClose={() => setIsCartOpen(false)}
+        darkMode={darkMode}
       />
       <div className="projectsandservices">
-      <Products products={products} onAddToCart={onAddToCart} />
-      <Groups groups={groups} onAddToCart={onAddToCart} />
+        {cartorderdetails ===true ? (
+          <DetailsOrder
+            onClose={() => setCartOrderDetails(false)}
+          />
+        ) : (
+          <>
+          <Products products={filteredProducts} onAddToCart={onAddToCart} darkMode={darkMode}/>
+          <Groups groups={filteredGroups} onAddToCart={onAddToCart} darkMode={darkMode}/>
+      </>
+        )}
       <Footer darkMode={darkMode} />
       </div>
     </div>

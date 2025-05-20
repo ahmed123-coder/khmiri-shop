@@ -1,4 +1,5 @@
 const express = require("express");
+const dotenv = require("dotenv");
 const router = express.Router();
 const Order = require("../models/Order");
 const Product = require("../models/Product");
@@ -6,7 +7,7 @@ const DetailsClient = require("../models/DetailsClient");
 const ProductGroup = require("../models/ProductGroup");
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
-const JWT_SECRET = "your_secret_key";
+const JWT_SECRET = process.env.JWT_SECRET;
 
 
 
@@ -152,22 +153,9 @@ router.put("/:id/delivered", async (req, res) => {
 });
 router.put("/:id/canceled", async (req, res) => {
   try {
-    const token = req.headers.authorization?.split(" ")[1];
-
-    if (!token) {
-      return res.status(401).json({ message: "No token provided" });
-    }
-    const decode = jwt.verify(token, JWT_SECRET);
-    const user = await User.findById(decode.id);
-    if(!user){
-      return res.status(404).json({ message: "User not found" });
-    }
     const order = await Order.findById(req.params.id);
     if (!order) {
       return res.status(404).json({ error: "Order not found" });
-    }
-    if(order.customer !== user._id){
-      return res.status(403).json({ message: "You are not authorized to cancel this order" });
     }
       order.status = "cancelled";
       await order.save();
