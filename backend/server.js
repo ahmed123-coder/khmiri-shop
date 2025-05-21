@@ -24,7 +24,7 @@ app.use("/api/users", routeruser);
 app.use("/api/products", routerproducts);
 app.use("/api/groupproducts", routergroupproducts)
 app.use("/api/details", routerdetails);
-// ahmedkhemirii@gmail.com  ahmed 2003 admin
+// khmirishop@gmail.com  khmiri shop admin
 const PORT = process.env.PORT || 4000;
 
 app.listen(PORT, () => {
