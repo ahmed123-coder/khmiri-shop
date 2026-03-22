@@ -22,7 +22,7 @@ function User() {
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.get("http://localhost:4000/api/users", {
+      const response = await axios.get("https://khmiri-shop.onrender.com/api/users", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -36,7 +36,7 @@ function User() {
 
   const addUser = async (formdata) => {
     try {
-      await axios.post("http://localhost:4000/api/users", formdata);
+      await axios.post("https://khmiri-shop.onrender.com/api/users", formdata);
       fetchUsers();
       setEditUser(null);
       setFormdata({ firstName: "", lastName: "", email: "", password: "" });
@@ -47,7 +47,7 @@ function User() {
 
   const handleDeleteUser = async (userId) => {
     try {
-      await axios.delete(`http://localhost:4000/api/users/${userId}`, {
+      await axios.delete(`https://khmiri-shop.onrender.com/api/users/${userId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -70,7 +70,7 @@ function User() {
 
   const updateUser = async (userId) => {
     try {
-      await axios.put(`http://localhost:4000/api/users/${userId}`, formdata, {
+      await axios.put(`https://khmiri-shop.onrender.com/api/users/${userId}`, formdata, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

@@ -14,12 +14,12 @@ const JWT_SECRET = process.env.JWT_SECRET;
 // Cloudinary storage config
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
-  params: { // بدل الدالة الغير متزامنة
+  params: async (req, file) => ({
     folder: "uploads",
     upload_preset: process.env.CLOUDINARY_UPLOAD_PRESET,
     allowed_formats: ["jpg", "png", "jpeg", "webp"],
-    transformation: [{ width: 800, crop: "limit" }]
-  }
+    transformation: [{ width: 800, crop: "limit" }],
+  }),
 });
 
 const upload = multer({ storage });

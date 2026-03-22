@@ -30,7 +30,7 @@ router.post("/login", async (req, res) => {
     console.log("Password matched");
 
     const payload = { id: user._id, email: user.email, role: user.role };
-    const token = jwt.sign(payload, "your_secret_key", { expiresIn: "24h" });
+    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "24h" });
 
     res.status(200).json({ token });
   } catch (error) {
