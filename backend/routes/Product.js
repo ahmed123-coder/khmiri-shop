@@ -15,7 +15,7 @@ const JWT_SECRET = process.env.JWT_SECRET;
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: async (req, file) => ({
-    folder: "uploads",
+    folder: "khmiri-shop",
     upload_preset: process.env.CLOUDINARY_UPLOAD_PRESET,
     allowed_formats: ["jpg", "png", "jpeg", "webp"],
     transformation: [{ width: 800, crop: "limit" }],

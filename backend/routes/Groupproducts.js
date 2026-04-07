@@ -13,7 +13,7 @@ const cloudinary = require("../cloudinaryConfig");
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
-    folder: "uploads",
+    folder: "khmiri-shop",
     upload_preset:process.env.CLOUDINARY_UPLOAD_PRESET,
     allowed_formats: ["jpg", "png", "jpeg", "webp"],
     transformation: [{ width: 800, crop: "limit" }],
