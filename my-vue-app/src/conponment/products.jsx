@@ -28,7 +28,7 @@ function Products({onAddToCart, products , darkMode}) {
                 <div className="card-body">
                   <h5 className="card-title">{product.name}</h5>
                   <p className="card-text">{product.description}</p>
-                  <p className="card-text"><strong>السعر:</strong> {product.price} دولار</p>
+                  <p className="card-text"><strong>Price:</strong> ${product.price}</p>
                   <button onClick={() => onAddToCart(product._id, "product", product)} className="button-add">Add To Cart</button>
                   <button onClick={() => handleBuyNow(product._id)} className="button-buy">Buy</button>
                 </div>

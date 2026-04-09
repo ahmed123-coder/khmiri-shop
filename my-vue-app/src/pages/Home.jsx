@@ -2,14 +2,16 @@ import React, { useState, useEffect } from "react";
 import Products from "../conponment/products";
 import Groups from "../conponment/groupproducts";
 import CartUserSidebar from "../conponment/cartuser";
-import Footer from "../conponment/footer";
 import Navbar from "../conponment/navbare";
 import DetailsOrder from "../conponment/detailsorder";
+import Hero from "../conponment/Hero";
+import ContactSection from "../conponment/ContactSection";
 import axios from "axios";
+import "../styles/home_layout.css";
 
 function HomePage() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [token , setToken] = useState(localStorage.getItem("token") || "");
+  const [token] = useState(localStorage.getItem("token") || "");
   const [products, setProducts] = useState([]);
   const [groups, setGroups] = useState([]);
   const [cartProducts, setCartProducts] = useState([]);
@@ -19,6 +21,7 @@ function HomePage() {
   const [darkMode, setDarkMode] = useState(() => {
     return localStorage.getItem("darkMode") === "enabled";
   });
+
   const filteredProducts = products.filter(p => p.name.toLowerCase().includes(searchTerm));
   const filteredGroups = groups.filter(g => g.name.toLowerCase().includes(searchTerm));
 
@@ -30,6 +33,7 @@ function HomePage() {
     axios.get("https://khmiri-shop.onrender.com/api/groupproducts").then((res) => {
       setGroups(res.data);
     });
+
     const storedCart = JSON.parse(localStorage.getItem("guestCart")) || {
       products: [],
       groupproducts: [],
@@ -38,43 +42,43 @@ function HomePage() {
     setCartProducts(storedCart.products || []);
     setCartGroups(storedCart.groupproducts || []);
   }, []);
+
   const handleSearch = (term) => {
-  setSearchTerm(term.toLowerCase());
-};
-  const updateLocalStorage = (products, groups) => {
+    setSearchTerm(term.toLowerCase());
+  };
+
+  const updateLocalStorage = (updatedProducts, updatedGroups) => {
     localStorage.setItem(
       "guestCart",
-      JSON.stringify({ products, groupproducts: groups })
+      JSON.stringify({ products: updatedProducts, groupproducts: updatedGroups })
     );
   };
 
   const onAddToCart = (id, type, details) => {
     if (type === "product") {
       const exists = cartProducts.find((item) => item.product === id);
-      let updated = exists
+      const updated = exists
         ? cartProducts.map((item) =>
             item.product === id
-              ? { ...item, quantity: item.quantity + 1, image: details.image, name: details.name , price: details.price }
+              ? { ...item, quantity: item.quantity + 1, image: details.image, name: details.name, price: details.price }
               : item
           )
-        : [...cartProducts, { product: id, quantity: 1 , image: details.image, name: details.name , price: details.price }];
+        : [...cartProducts, { product: id, quantity: 1, image: details.image, name: details.name, price: details.price }];
 
       setCartProducts(updated);
       updateLocalStorage(updated, cartGroups);
     } else {
       const exists = cartGroups.find((item) => item.group === id);
-      let updated = exists
+      const updated = exists
         ? cartGroups.map((item) =>
             item.group === id
-              ? { ...item, quantity: item.quantity + 1, image: details.image, name: details.name , price: details.price }
+              ? { ...item, quantity: item.quantity + 1, image: details.image, name: details.name, price: details.price }
               : item
           )
-        : [...cartGroups, { group: id, quantity: 1 , image: details.image , name: details.name , price: details.price }];
+        : [...cartGroups, { group: id, quantity: 1, image: details.image, name: details.name, price: details.price }];
       setCartGroups(updated);
       updateLocalStorage(cartProducts, updated);
     }
-    console.log("cartproducts", cartProducts);
-    console.log("cartgroups", cartGroups);
   };
 
   const handleUpdateQuantity = (id, type, newQty) => {
@@ -106,11 +110,8 @@ function HomePage() {
   };
 
   return (
-    <div className="homepage">
-      <div>
-        {console.log("Token:", token)}
-      </div>
-            <Navbar 
+    <div className="homepage-new">
+      <Navbar 
         token={token}
         isCartOpen={isCartOpen}
         setIsCartOpen={setIsCartOpen}
@@ -120,6 +121,7 @@ function HomePage() {
         iscartorderdetails={cartorderdetails}
         onSearchChange={handleSearch}
       />
+      
       <CartUserSidebar
         cartProducts={cartProducts}
         cartGroups={cartGroups}
@@ -129,19 +131,26 @@ function HomePage() {
         onClose={() => setIsCartOpen(false)}
         darkMode={darkMode}
       />
-      <div className="projectsandservices">
-        {cartorderdetails ===true ? (
-          <DetailsOrder
-            onClose={() => setCartOrderDetails(false)}
-          />
-        ) : (
-          <>
-          <Products products={filteredProducts} onAddToCart={onAddToCart} darkMode={darkMode}/>
-          <Groups groups={filteredGroups} onAddToCart={onAddToCart} darkMode={darkMode}/>
-      </>
-        )}
-      <Footer darkMode={darkMode} />
-      </div>
+
+      {cartorderdetails === true ? (
+        <div className="details-container">
+            <DetailsOrder onClose={() => setCartOrderDetails(false)} />
+        </div>
+      ) : (
+        <main>
+          <Hero onExplore={() => document.getElementById('products-section')?.scrollIntoView({ behavior: 'smooth' })} />
+          
+          <div id="products-section" className="section-container">
+            <Products products={filteredProducts} onAddToCart={onAddToCart} darkMode={darkMode} />
+          </div>
+
+          <div className="section-container gray-bg">
+            <Groups groups={filteredGroups} onAddToCart={onAddToCart} darkMode={darkMode} />
+          </div>
+
+          <ContactSection />
+        </main>
+      )}
     </div>
   );
 }

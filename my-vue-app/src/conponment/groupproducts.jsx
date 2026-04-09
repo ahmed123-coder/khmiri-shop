@@ -28,7 +28,7 @@ function Groups({onAddToCart, groups, darkMode}) {
                 <div className="card-body">
                   <h5 className="card-title">{group.name}</h5>
                   <p className="card-text">{group.description}</p>
-                  <p className="card-text"><strong>السعر:</strong> {group.price} دولار</p>
+                  <p className="card-text"><strong>Price:</strong> ${group.price}</p>
                   <button onClick={() => onAddToCart(group._id, "groupproduct", group)} className="button-add">Add To Cart</button>
                   <button onClick={() => handleBuyNow(group._id)} className="button-buy">Buy</button>
                 </div>
